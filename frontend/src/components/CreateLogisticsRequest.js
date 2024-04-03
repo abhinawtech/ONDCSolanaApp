@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import API from '../api/api';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const CreateLogisticsRequest = () => {
   const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ const CreateLogisticsRequest = () => {
     timeline: '',
   });
   const navigate = useNavigate();
-
+  const { auth } = useAuth(); 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -20,8 +21,12 @@ const CreateLogisticsRequest = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await API.post('/logistics', formData);
-      navigate('/view-logistics-requests');
+      await API.post('/api/logistics/logistics-requests', formData, {
+        headers: {
+          Authorization: `Bearer ${auth?.token}`, // Optional chaining in case auth is null initially
+        },
+      });
+    //    navigate('/api/view-logistics-requests');
     } catch (error) {
       console.error('Failed to create logistics request:', error);
     }
